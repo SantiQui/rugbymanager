@@ -1,0 +1,6 @@
+{
+  "name": "Rugby Club Manager",
+  "description": "Sistema completo de gestión de rugby para administradores, managers, entrenadores y jugadores con fichas médicas, estadísticas y rutinas de gimnasio.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
