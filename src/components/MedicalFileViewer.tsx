@@ -169,7 +169,7 @@ export default function MedicalFileViewer({ player, onClose }: MedicalFileViewer
                   Imprimir
                 </button>
                 <button
-                  onClick={() => alert(`Descargando ${player.fichaMedicaNombre}... (Simulación de descarga)`)}
+                  onClick={() => console.log(`Descargando ${player.fichaMedicaNombre}... (Simulación de descarga)`)}
                   className="inline-flex items-center gap-1.5 rounded-lg bg-green-700 px-3 py-1.5 font-sans text-xs font-bold text-white hover:bg-green-800 cursor-pointer"
                 >
                   <Download className="h-3.5 w-3.5" />

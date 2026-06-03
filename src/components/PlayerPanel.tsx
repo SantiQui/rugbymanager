@@ -45,7 +45,7 @@ export default function PlayerPanel({
   const handleSaveJustification = (e: React.FormEvent) => {
     e.preventDefault();
     if (!justFileName) {
-      alert('Por favor, examine e introduzca un archivo de certificado primero.');
+      console.log('Por favor, examine e introduzca un archivo de certificado primero.');
       return;
     }
 
@@ -67,7 +67,7 @@ export default function PlayerPanel({
     setJustFileName('');
     setJustFileBase64('');
     if (justFileInputRef.current) justFileInputRef.current.value = '';
-    alert('¡Justificativo digital cargado y guardado con éxito! El profesor podrá constatar la justificación en la asistencia.');
+    console.log('¡Justificativo digital cargado y guardado con éxito! El profesor podrá constatar la justificación en la asistencia.');
   };
 
   const handleDeleteJustification = (justId: string) => {
@@ -359,7 +359,7 @@ export default function PlayerPanel({
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-emerald-150 dark:border-[#2ECC71]/15 pt-3">
-                  <span className="font-mono text-[10px] text-slate-500 dark:text-slate-400 truncate max-w-full" title={player.fichaMedicaNombre}>
+                  <span className="font-mono text-[10px] text-slate-500 dark:text-slate-400 truncate max-w-full" title={player.fichaMedicaNombre || ""}>
                     Documento: {player.fichaMedicaNombre}
                   </span>
                   <button
@@ -483,7 +483,7 @@ export default function PlayerPanel({
                         <div className="flex items-center gap-1">
                           <button
                             type="button"
-                            onClick={() => alert(`Visualizando / Descargando justificativo: ${just.nombreArchivo} (Certificado de inasistencia oficial digitalizado)`)}
+                            onClick={() => console.log(`Visualizando / Descargando justificativo: ${just.nombreArchivo} (Certificado de inasistencia oficial digitalizado)`)}
                             className="rounded p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 transition-colors cursor-pointer"
                             title="Descargar Certificado"
                           >

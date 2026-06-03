@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Professor, Player, Match, GymRoutine, Attendance, PlayerStats } from '../types';
-import { CLUB_CATEGORIES, RUGBY_POSITIONS } from '../mockData';
+import { CLUB_CATEGORIES, RUGBY_POSITIONS } from "../constants";
 import { Calendar, UserCheck, FileSpreadsheet, Dumbbell, Trophy, Plus, Check, Save, UserMinus, PlusCircle, AlertCircle } from 'lucide-react';
 
 interface ProfessorPanelProps {
@@ -77,27 +77,25 @@ export default function ProfessorPanel({
     }
   };
 
-  const handleSaveAttendance = (e: React.FormEvent) => {
-    e.preventDefault();
-    const playersInClass = players.filter(p => p.categoria === attCategory);
-    if (playersInClass.length === 0) {
-      alert("No hay jugadores cargados en esta categoría para tomar asistencia.");
-      return;
-    }
+const handleSaveAttendance = (e: React.FormEvent) => {
+    e.preventDefault(); // Evitamos que la página parpadee o se recargue
 
-    const newAttendance: Attendance = {
+    // Armamos el objeto con los nombres exactos que pide tu modelo "Attendance"
+    const newAtt = {
       id: 'att_' + Date.now(),
-      fecha: attDate,
-      tipo: attType,
-      categoria: attCategory,
-      asistentes: attendancePresents,
-      justificados: attendanceJustifieds,
+      fecha: attDate,           // Tu variable de fecha
+      categoria: attCategory,   // Tu variable de categoría
+      tipo: attType,            // Tipo de actividad (Asegurate de que tu select cambie esta variable)
+      asistentes: attendancePresents // Tu arreglo de IDs de jugadores presentes
     };
-
-    onAddAttendance(newAttendance);
-    alert('Asistencia registrada correctamente.');
+    
+    // Llamamos a la API
+    onAddAttendance(newAtt);
+    
+    // Vaciamos el formulario silenciosamente para seguir trabajando
+    setAttDate('');
     setAttendancePresents([]);
-    setAttendanceJustifieds([]);
+    setAttendanceJustifieds([]); // Limpiamos los justificados también
   };
 
   // --- ROUTINE ACTIONS ---
@@ -118,16 +116,16 @@ export default function ProfessorPanel({
   const handleSaveRoutine = (e: React.FormEvent) => {
     e.preventDefault();
     if (!routPosicion) {
-      alert('Debe elegir una posición destinataria.');
+      console.log('Debe elegir una posición destinataria.');
       return;
     }
     if (!routTitle) {
-      alert('Defina el título de la rutina gimnástica.');
+      console.log('Defina el título de la rutina gimnástica.');
       return;
     }
     const validExercises = exercises.filter(ex => ex.ejercicio.trim() !== '');
     if (validExercises.length === 0) {
-      alert('Agregue al menos un ejercicio válido.');
+      console.log('Agregue al menos un ejercicio válido.');
       return;
     }
 
@@ -143,7 +141,7 @@ export default function ProfessorPanel({
     };
 
     onAddRoutine(newRoutine);
-    alert('Rutina de gimnasio asignada con éxito.');
+    console.log('Rutina de gimnasio asignada con éxito.');
     
     // clean form
     setRoutPosicion(RUGBY_POSITIONS[0]);
@@ -204,7 +202,7 @@ export default function ProfessorPanel({
     if (!selectedMatchId) return;
 
     if (matchTitulares.length === 0) {
-      alert("Debe convocar al menos un jugador titular para oficializar la planilla.");
+      console.log("Debe convocar al menos un jugador titular para oficializar la planilla.");
       return;
     }
 
@@ -216,7 +214,7 @@ export default function ProfessorPanel({
     });
 
     onUpdateMatchStats(selectedMatchId, matchTitulares, matchSuplentes, finalStats, scoreClub, scoreRival);
-    alert('Planilla oficial de rugby cargada con éxito. El partido ha sido marcado como "Jugado".');
+    console.log('Planilla oficial de rugby cargada con éxito. El partido ha sido marcado como "Jugado".');
     setSelectedMatchId('');
   };
 
@@ -847,8 +845,8 @@ export default function ProfessorPanel({
                           id={`exercise-notes-input-${index}`}
                           type="text"
                           placeholder="Notas / RM %"
-                          value={ex.notes}
-                          onChange={(e) => handleExerciseChange(index, 'notes', e.target.value)}
+                          value={ex.notas}
+                          onChange={(e) => handleExerciseChange(index, 'notas', e.target.value)}
                           className="w-full rounded border border-slate-350 bg-white px-2 py-1 font-sans text-xs"
                         />
                       </div>

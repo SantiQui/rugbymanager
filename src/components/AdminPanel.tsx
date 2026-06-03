@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Manager, Player, Professor } from '../types';
-import { CLUB_CATEGORIES } from '../mockData';
-import { UserPlus, Shield, ClipboardList, CheckCircle2, AlertTriangle, Users2, AtSign, Phone, Calendar, IdCard, Trash2, Edit } from 'lucide-react';
+import { CLUB_CATEGORIES } from "../constants";import { UserPlus, Shield, ClipboardList, CheckCircle2, AlertTriangle, Users2, AtSign, Phone, Calendar, IdCard, Trash2, Edit } from 'lucide-react';
 
 interface AdminPanelProps {
   managers: Manager[];
@@ -80,29 +79,22 @@ export default function AdminPanel({
       return;
     }
 
+    // Adaptamos el objeto al formato que espera tu App.tsx y el backend
+    const managerData: Manager = {
+      id: editingManager ? editingManager.id : 'temp_id', // El ID real lo pone el backend
+      nombre: nombre,
+      apellido: apellido,
+      documento: documento, // CAMBIADO: Usando 'documento' como acordamos
+      fecha_nacimiento: fechaNacimiento,
+      telefono: telefono,
+      correo: correo,
+      categorias: selectedCats,
+    };
+
     if (editingManager) {
-      onUpdateManager({
-        ...editingManager,
-        nombre,
-        apellido,
-        documento,
-        fecha_nacimiento: fechaNacimiento,
-        telefono,
-        correo,
-        categorias: selectedCats,
-      });
+      onUpdateManager(managerData);
     } else {
-      const newM: Manager = {
-        id: 'm_' + Date.now(),
-        nombre,
-        apellido,
-        documento,
-        fecha_nacimiento: fechaNacimiento,
-        telefono,
-        correo,
-        categorias: selectedCats,
-      };
-      onAddManager(newM);
+      onAddManager(managerData);
     }
 
     setIsAdding(false);

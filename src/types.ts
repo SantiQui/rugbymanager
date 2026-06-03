@@ -85,6 +85,7 @@ export interface Match {
   titulares: string[]; // Player IDs
   suplentes: string[]; // Player IDs
   estadisticas: { [playerId: string]: PlayerStats };
+  tercerTiempo?: TercerTiempoData;
 }
 
 export interface Exercise {
@@ -116,3 +117,12 @@ export interface Attendance {
 }
 
 export type UserRole = 'admin' | 'manager' | 'profesor' | 'jugador';
+
+export interface TercerTiempoData {
+  costo_comida: number;
+  costo_bebida: number;
+  otros_gastos: number;
+  alias_transferencia: string;
+  costo_total?: number;
+  costo_por_jugador?: number;
+}
