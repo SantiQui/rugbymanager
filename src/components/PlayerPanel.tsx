@@ -1046,7 +1046,7 @@ export default function PlayerPanel({
                               Puedes realizar una transferencia directa con el CBU del club o entregar el pago en efectivo o cheques directamente a tu mánager para que registre tu recibo digital.
                             </p>
                             <a
-                              href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Hola, quería coordinar el pago de mi cuota adeudada del Fichaje UAR 2026. Mi nombre es ${player.nombre} ${player.apellido}.`)}`}
+                              href={`https://wa.me/5493493416629?text=${encodeURIComponent(`Hola, quería coordinar el pago de mi cuota adeudada del Fichaje UAR 2026. Mi nombre es ${player.nombre} ${player.apellido}.`)}`}
                               target="_blank"
                               rel="noreferrer"
                               className="mt-2 text-center rounded block bg-emerald-700 text-white font-bold p-1.5 hover:bg-emerald-800 transition text-[10px]"
@@ -1057,6 +1057,8 @@ export default function PlayerPanel({
                         )}
                       </div>
                     </div>
+
+                    {/* Detailed instalments list */}
 
                     {/* Detailed instalments list */}
                     <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs md:col-span-2 space-y-4">
