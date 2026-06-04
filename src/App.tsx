@@ -13,8 +13,13 @@ import {
 } from './services/api';
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [currentRole, setCurrentRole] = useState<UserRole>('admin');
+  // 1. LEER LA MEMORIA AL ARRANCAR
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return localStorage.getItem('isAuthenticated') === 'true';
+  });
+  const [currentRole, setCurrentRole] = useState<UserRole>(() => {
+    return (localStorage.getItem('userRole') as UserRole) || 'admin';
+  });
 
   const [managers, setManagers] = useState<Manager[]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
@@ -45,12 +50,25 @@ export default function App() {
     if (isAuthenticated) loadDatabase();
   }, [isAuthenticated]);
 
+  // 2. GUARDAR LA MEMORIA AL INICIAR SESIÓN
   const handleLoginSuccess = (backendRole: string) => {
-    setCurrentRole(backendRole.toLowerCase() as UserRole);
+    const role = backendRole.toLowerCase() as UserRole;
+    setCurrentRole(role);
     setIsAuthenticated(true);
+    
+    // Guardamos en el navegador
+    localStorage.setItem('userRole', role);
+    localStorage.setItem('isAuthenticated', 'true');
   };
 
-  const handleLogout = () => setIsAuthenticated(false);
+  // 3. BORRAR LA MEMORIA AL CERRAR SESIÓN
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    
+    // Limpiamos el navegador
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('isAuthenticated');
+  };
 
   // Funciones de guardado SILENCIOSAS (sin alerts)
   const handleAddManager = async (newM: Manager) => { try { await saveManager(newM); loadDatabase(); } catch (e) { console.error(e); } };
