@@ -38,9 +38,6 @@ export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: (role
       <div className="bg-gray-800 p-8 rounded-xl shadow-2xl max-w-md w-full border border-gray-700">
         
         <div className="text-center mb-8">
-          <div className="bg-emerald-800 w-12 h-12 rounded-lg mx-auto flex items-center justify-center mb-4">
-            <span className="text-emerald-400 text-2xl">🛡️</span>
-          </div>
           <h1 className="text-2xl font-bold text-white tracking-wider">CLUB GUAYCURÚES</h1>
           <p className="text-emerald-500 text-sm tracking-widest mt-1">SUNCHALES • PORTAL DE GESTIÓN</p>
         </div>
@@ -54,14 +51,13 @@ export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: (role
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-gray-400 text-xs font-bold tracking-wider mb-2">
-              CORREO ELECTRÓNICO / NO. FICHA O DNI
+              DNI
             </label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-emerald-500 transition-colors"
-              placeholder="Ej: admin o número de DNI"
               required
             />
           </div>
@@ -78,7 +74,6 @@ export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: (role
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-emerald-500 transition-colors"
-              placeholder="••••••••"
               required
             />
           </div>
@@ -88,7 +83,7 @@ export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: (role
             disabled={isLoading}
             className="w-full bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
           >
-            {isLoading ? 'VERIFICANDO...' : '🔑 INGRESAR AL SISTEMA'}
+            {isLoading ? 'VERIFICANDO...' : 'INGRESAR AL SISTEMA'}
           </button>
         </form>
 
