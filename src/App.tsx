@@ -20,6 +20,9 @@ export default function App() {
   const [currentRole, setCurrentRole] = useState<UserRole>(() => {
     return (localStorage.getItem('userRole') as UserRole) || 'admin';
   });
+  
+  // ESTADO DE CARGA (Para la ruedita al hacer F5)
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const [managers, setManagers] = useState<Manager[]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
@@ -30,6 +33,7 @@ export default function App() {
   const [campaigns, setCampaigns] = useState<FundraiserCampaign[]>([]);
 
   const loadDatabase = async () => {
+    setIsLoading(true); // Prende la ruedita de carga
     try {
       const [dbManagers, dbProfessors, dbPlayers, dbMatches, dbRoutines, dbAttendances, dbCampaigns] = await Promise.all([
         getManagers(), getProfessors(), getPlayers(), getMatches(), getRoutines(), getAttendances(), getCampaigns()
@@ -43,6 +47,8 @@ export default function App() {
       setCampaigns(dbCampaigns);
     } catch (error) {
       console.error("Error al cargar la base de datos:", error);
+    } finally {
+      setIsLoading(false); // Apaga la ruedita cuando termina
     }
   };
 
@@ -139,32 +145,42 @@ export default function App() {
 
           <div id="active-panel-wrapper" className="bg-white border border-gray-200 rounded-xl p-6 shadow-xl animate-in fade-in duration-300 transition-colors">
             
-            {currentRole === 'admin' && (
-              <AdminPanel managers={managers} players={players} professors={professors} onAddManager={handleAddManager} onDeleteManager={handleDeleteManager} onUpdateManager={handleUpdateManager} />
-            )}
+            {/* CONDICIONAL: Si está cargando muestra la ruedita, sino muestra los paneles */}
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center py-20 opacity-70">
+                <div className="h-10 w-10 animate-spin rounded-full border-4 border-emerald-200 border-t-emerald-600 mb-4"></div>
+                <p className="font-sans text-sm font-bold text-slate-500 uppercase tracking-widest animate-pulse">Sincronizando Sistema...</p>
+              </div>
+            ) : (
+              <>
+                {currentRole === 'admin' && (
+                  <AdminPanel managers={managers} players={players} professors={professors} onAddManager={handleAddManager} onDeleteManager={handleDeleteManager} onUpdateManager={handleUpdateManager} />
+                )}
 
-            {currentRole === 'manager' && (
-              activeManagerObj ? (
-                <ManagerPanel manager={activeManagerObj} players={players} professors={professors} matches={matches} campaigns={campaigns} onUpdateCampaigns={handleUpdateCampaigns} onAddPlayer={handleAddPlayer} onUpdatePlayer={handleUpdatePlayer} onDeletePlayer={handleDeletePlayer} onAddProfessor={handleAddProfessor} onAddMatch={handleAddMatch} onDeleteMatch={handleDeleteMatch} onUpdateMatch={handleUpdateMatch} />
-              ) : (
-                <div className="text-center py-12 text-gray-500">Hubo un inconveniente al seleccionar el manager activo.</div>
-              )
-            )}
+                {currentRole === 'manager' && (
+                  activeManagerObj ? (
+                    <ManagerPanel manager={activeManagerObj} players={players} professors={professors} matches={matches} campaigns={campaigns} onUpdateCampaigns={handleUpdateCampaigns} onAddPlayer={handleAddPlayer} onUpdatePlayer={handleUpdatePlayer} onDeletePlayer={handleDeletePlayer} onAddProfessor={handleAddProfessor} onAddMatch={handleAddMatch} onDeleteMatch={handleDeleteMatch} onUpdateMatch={handleUpdateMatch} />
+                  ) : (
+                    <div className="text-center py-12 text-gray-500">Hubo un inconveniente al seleccionar el manager activo.</div>
+                  )
+                )}
 
-            {currentRole === 'profesor' && (
-              activeProfessorObj ? (
-                <ProfessorPanel professor={activeProfessorObj} players={players} matches={matches} routines={routines} attendances={attendances} onAddRoutine={handleAddRoutine} onAddAttendance={handleAddAttendance} onUpdateMatchStats={handleUpdateMatchStats} />
-              ) : (
-                <div className="text-center py-12 text-gray-500">No hay profesores cargados.</div>
-              )
-            )}
+                {currentRole === 'profesor' && (
+                  activeProfessorObj ? (
+                    <ProfessorPanel professor={activeProfessorObj} players={players} matches={matches} routines={routines} attendances={attendances} onAddRoutine={handleAddRoutine} onAddAttendance={handleAddAttendance} onUpdateMatchStats={handleUpdateMatchStats} />
+                  ) : (
+                    <div className="text-center py-12 text-gray-500">No hay profesores cargados.</div>
+                  )
+                )}
 
-            {currentRole === 'jugador' && (
-              activePlayerObj ? (
-                <PlayerPanel player={activePlayerObj} matches={matches} routines={routines} campaigns={campaigns} onUpdateCampaigns={handleUpdateCampaigns} onUpdatePlayer={handleUpdatePlayer} />
-              ) : (
-                <div className="text-center py-12 text-gray-500">No hay jugadores registrados en esta categoría deportiva.</div>
-              )
+                {currentRole === 'jugador' && (
+                  activePlayerObj ? (
+                    <PlayerPanel player={activePlayerObj} matches={matches} routines={routines} campaigns={campaigns} onUpdateCampaigns={handleUpdateCampaigns} onUpdatePlayer={handleUpdatePlayer} />
+                  ) : (
+                    <div className="text-center py-12 text-gray-500">No hay jugadores registrados en esta categoría deportiva.</div>
+                  )
+                )}
+              </>
             )}
 
           </div>
