@@ -1,7 +1,7 @@
 import { Manager, Professor, Player, Match, GymRoutine, Attendance, FundraiserCampaign } from '../types';
 
-// Asegurate de que esta URL coincida con tu configuración de Django
-const API_URL = 'http://127.0.0.1:8000/api/core';
+// Magia pura: Si existe la variable de Vercel la usa, sino, usa el localhost de tu compu.
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api/core';
 
 // --- HELPER PARA PETICIONES ---
 // Esta función maneja todos los fetch automáticamente
