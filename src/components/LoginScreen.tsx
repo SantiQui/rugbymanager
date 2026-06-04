@@ -88,10 +88,7 @@ export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: (role
         </form>
 
         <div className="mt-8 text-center">
-          <p className="text-gray-500 text-xs tracking-widest">UNIÓN SANTAFESINA DE RUGBY • CICLO 2026</p>
-          <span className="inline-block border border-emerald-900 text-emerald-700 text-[10px] px-2 py-1 rounded mt-2">
-            DJANGO & REST API INTEGRABLE READY
-          </span>
+          <p className="text-gray-500 text-xs tracking-widest">UNIÓN SANTAFESINA DE RUGBY</p>
         </div>
       </div>
     </div>

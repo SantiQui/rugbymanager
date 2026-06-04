@@ -126,7 +126,7 @@ export default function App() {
             <div className="flex items-center gap-3">
               <div>
                 <h3 className="font-sans font-black text-gray-900 tracking-tight text-base md:text-lg leading-tight uppercase">
-                  Guaycurúes Rugby Sunchales
+                  Guaycurues Rugby Sunchales
                 </h3>
               </div>
             </div>
@@ -189,7 +189,7 @@ export default function App() {
         <footer className="border-t border-gray-200 bg-white/70 backdrop-blur-md py-6 mt-12 text-xs text-gray-500 font-sans transition-colors">
           <div className="mx-auto max-w-7xl px-4 flex flex-col md:flex-row items-center justify-between gap-3 text-center ">
             <div>
-              <p className="font-bold text-gray-900 uppercase tracking-tight">© 2026 Guaycurúes Rugby Sunchales. Reservados todos los derechos.</p>
+              <p className="font-bold text-gray-900 uppercase tracking-tight text-allign-center">© 2026 Guaycurúes Rugby Sunchales. Reservados todos los derechos.</p>
             </div>
           </div>
         </footer>
