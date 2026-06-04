@@ -120,7 +120,8 @@ export default function PlayerPanel({
   });
 
   const assignedRoutines = routines.filter(r => 
-    r.posicion === player.posicion || r.jugadorId === player.id
+    r.jugadorId === player.id || 
+    (r.posicion && player.posicion && player.posicion.includes(r.posicion))
   );
   const isMedicalApproved = player.fichaMedicaUrl !== null;
 
@@ -181,6 +182,16 @@ export default function PlayerPanel({
               <h2 className="mt-1 font-sans font-black text-xl text-white tracking-tight">
                 {player.nombre} {player.apellido}
               </h2>
+              <div className="mt-2 flex flex-wrap gap-2">
+                  <span className="rounded bg-gray-900 px-2.5 py-1 text-[10px] font-bold text-white uppercase tracking-widest">{player.categoria}</span>
+
+                    {/* Mostrar Posiciones del Jugador */}
+                    {player.posicion?.split(', ').map((pos, index) => (
+                    <span key={index} className={`rounded px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest border ${index === 0 ? 'bg-gray-200 border-gray-300 text-gray-800' : 'bg-white border-gray-200 text-gray-500'}`}>
+                    {pos}
+                  </span>
+                    ))}
+                </div>
               <p className="mt-0.5 font-sans text-xs text-emerald-100 font-semibold uppercase">
                 Categoría Oficial: <span className="text-white font-bold">{player.categoria}</span>
               </p>
@@ -347,45 +358,32 @@ export default function PlayerPanel({
             </div>
 
             {isMedicalApproved ? (
-              <div className="rounded-xl border border-emerald-500/20 bg-emerald-50 dark:bg-emerald-950/40 p-5 space-y-4">
+              <div className="rounded-xl border border-emerald-500/20 bg-emerald-50 p-5 space-y-4">
                 <div className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-700 dark:text-[#2ECC71] shrink-0 mt-0.5" />
+                  <CheckCircle2 className="h-5 w-5 text-emerald-700 shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="font-sans font-bold text-emerald-800 dark:text-[#2ECC71] text-xs">Apto Médico Validado para Rugby de Alta Competencia</h4>
-                    <p className="mt-1 font-sans text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-normal">
-                      Su Ficha Médica digital certificada por la Unión Argentina de Rugby ha sido presentada y auditada eficazmente por el Manager del Club el día <strong>{player.fichaMedicaFecha}</strong>. Su habilitación administrativa para partidos de torneo nacional es <strong className="text-emerald-800 dark:text-[#2ECC71]">vigente</strong>.
+                    <h4 className="font-sans font-bold text-emerald-800 text-xs">Apto Médico Validado para Rugby de Alta Competencia</h4>
+                    <p className="mt-1 font-sans text-xs text-slate-700 leading-relaxed font-normal">
+                      Su Ficha Médica digital certificada por la Unión Argentina de Rugby ha sido presentada y auditada eficazmente por el Manager del Club el día <strong>{player.fichaMedicaFecha}</strong>. Su habilitación administrativa para partidos de torneo nacional es <strong className="text-emerald-800">vigente</strong>.
                     </p>
                   </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-emerald-150 dark:border-[#2ECC71]/15 pt-3">
-                  <span className="font-mono text-[10px] text-slate-500 dark:text-slate-400 truncate max-w-full" title={player.fichaMedicaNombre || ""}>
-                    Documento: {player.fichaMedicaNombre}
-                  </span>
-                  <button
-                    id="btn-player-view-medical"
-                    onClick={() => setViewingMedicalCard(true)}
-                    className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-900 dark:hover:bg-emerald-800 border border-emerald-600 px-3 py-1.5 text-[10px] font-bold text-white transition cursor-pointer shadow-xs shrink-0 self-start sm:self-center"
-                  >
-                    <Eye className="h-3.5 w-3.5" />
-                    Abrir Ficha Médica
-                  </button>
                 </div>
               </div>
             ) : (
-              <div className="rounded-xl border border-amber-500/25 bg-amber-50 dark:bg-amber-950/20 p-5 space-y-3.5">
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 shadow-sm">
                 <div className="flex items-start gap-3">
-                  <ShieldAlert className="h-5 w-5 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="font-sans font-bold text-amber-800 dark:text-amber-300 text-xs">Falta la Presentación de la Ficha Médica Certificada</h4>
-                    <p className="mt-1 font-sans text-xs text-slate-705 dark:text-amber-100/90 leading-relaxed font-light">
-                      Usted actualmente se encuentra en situación de <strong className="text-amber-900 dark:text-amber-300 font-bold">No Habilitado</strong>. De acuerdo con la Unión Argentina de Rugby (UAR), todo atleta activo federado debe subir anualmente la ficha de apto deportivo firmada por un médico cardiólogo acreditado.
+                  <ShieldAlert className="h-6 w-6 text-amber-500 flex-shrink-0" />
+                  <div className="space-y-2">
+                    <h4 className="text-amber-800 font-bold text-sm uppercase tracking-wider">Falta Ficha Médica Certificada</h4>
+                    <p className="text-amber-700 text-xs leading-relaxed">
+                      Se encuentra en situación de <strong>No Habilitado</strong>. La UAR exige subir anualmente la ficha de apto físico firmada por un médico cardiólogo acreditado.
                     </p>
+                    <div className="bg-amber-100/50 border border-amber-200 rounded-lg p-3 mt-3">
+                      <p className="text-amber-800 text-xs font-semibold">
+                        Entregue su certificado al Manager de la categoría para que efectúe la carga digital.
+                      </p>
+                    </div>
                   </div>
-                </div>
-
-                <div className="rounded-md bg-amber-100/50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-500/20 p-3 text-xs md:text-sm font-sans text-slate-705 dark:text-amber-100/90 leading-relaxed font-light flex items-center gap-2">
-                  <span>Por favor, envíe su certificado firmado físicamente o en PDF a su Manager designado para que efectúe la carga digital inmediata en este perfil.</span>
                 </div>
               </div>
             )}
@@ -619,44 +617,48 @@ export default function PlayerPanel({
       {/* TAB: PRESCRIBED GYM GYMNASTICS REGIMENS OR ROUTINES */}
       {activeTab === 'routines' && (
         <div id="player-routines-tab" className="space-y-6">
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 font-sans text-xs text-slate-700 flex items-start gap-2.5 shadow-xs">
-            <strong>Planillas de Acondicionamiento:</strong> Revise las rutinas elaboradas por sus profesores según los focos tácticos de entrenamiento. Puede tachar las series ejecutadas conforme las realiza en el gimnasio del club.
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 font-sans text-sm text-slate-700 flex items-start gap-3 shadow-xs">
+            <Info className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+            <div>
+              <strong className="text-slate-900 block mb-1">Planillas de Acondicionamiento</strong> 
+              Revise las rutinas elaboradas por sus profesores según los focos tácticos de entrenamiento. Puede tachar las series ejecutadas conforme las realiza en el gimnasio del club.
+            </div>
           </div>
 
           {assignedRoutines.length === 0 ? (
             <div className="rounded-xl border border-slate-200 bg-white py-12 text-center text-slate-400">
-              <Dumbbell className="h-10 w-10 text-slate-300 mx-auto mb-2" />
-              <p className="font-sans font-bold text-slate-700 text-sm">No conserva ninguna gama de ejercicios actualmente.</p>
-              <p className="text-xs text-slate-400 mt-1">Los profesores y preparadores físicos publicarán sus rutinas aquí mismo.</p>
+              <Dumbbell className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+              <p className="font-sans font-bold text-slate-700 text-base">No conserva ninguna gama de ejercicios actualmente.</p>
+              <p className="text-sm text-slate-400 mt-1">Los profesores y preparadores físicos publicarán sus rutinas aquí mismo.</p>
             </div>
           ) : (
             <div className="space-y-6">
               {assignedRoutines.map(r => (
-                <div key={r.id} className="rounded-xl border border-slate-150 bg-white shadow-xs overflow-hidden">
+                <div key={r.id} className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
                   
                   {/* Routine card header */}
-                  <div className="border-b border-slate-100 bg-slate-50/70 p-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                  <div className="border-b border-slate-100 bg-slate-50/70 p-5 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                     <div>
-                      <div className="flex items-center gap-1 text-[10px] text-slate-400 font-bold uppercase tracking-wide">
-                        <Calendar className="h-3.5 w-3.5 text-slate-400" />
+                      <div className="flex items-center gap-1.5 text-xs text-slate-500 font-bold uppercase tracking-wide">
+                        <Calendar className="h-4 w-4 text-slate-400" />
                         <span>Publicado: {r.fechaAsignacion}</span>
                       </div>
-                      <h4 className="mt-1 font-sans font-black text-slate-900 text-base">{r.titulo}</h4>
+                      <h4 className="mt-1.5 font-sans font-black text-slate-900 text-lg">{r.titulo}</h4>
                       {r.descripcion && (
-                        <p className="mt-1 font-sans text-xs text-slate-500 italic">{r.descripcion}</p>
+                        <p className="mt-1 font-sans text-sm text-slate-600 italic">{r.descripcion}</p>
                       )}
                     </div>
-                    <div className="text-right sm:text-right text-xs">
-                      <span className="block text-[10px] text-slate-400 font-bold uppercase">Asignado por</span>
-                      <strong className="text-purple-800 font-bold block">{r.profesorNombre}</strong>
+                    <div className="text-left sm:text-right">
+                      <span className="block text-xs text-slate-400 font-bold uppercase mb-0.5">Asignado por</span>
+                      <strong className="text-slate-900 font-black text-sm block">{r.profesorNombre}</strong>
                     </div>
                   </div>
 
                   {/* Exercises Checklist interactive body */}
-                  <div className="p-5 font-sans text-xs">
-                    <span className="block font-bold text-slate-400 text-[10px] uppercase mb-2.5">Guía de ejercicios del preparador físico</span>
+                  <div className="p-5 font-sans">
+                    <span className="block font-bold text-slate-500 text-xs uppercase mb-3">Guía de ejercicios del preparador físico</span>
                     
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {r.ejercicios.map((ex, idx) => {
                         const exerciseKey = `${r.id}_${idx}`;
                         const isDone = completedExercises[exerciseKey] || false;
@@ -665,34 +667,34 @@ export default function PlayerPanel({
                           <div 
                             key={idx}
                             onClick={() => handleToggleExerciseCheck(exerciseKey)}
-                            className={`flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 rounded-lg border transition cursor-pointer ${
+                            className={`flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 rounded-lg border transition cursor-pointer ${
                               isDone 
-                                ? 'bg-slate-50 border-slate-150 text-slate-400 line-through' 
-                                : 'bg-white border-slate-200 text-slate-750 hover:bg-slate-50/50'
+                                ? 'bg-slate-50 border-slate-200 text-slate-400 line-through' 
+                                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50/80'
                             }`}
                           >
-                            <div className="flex items-center gap-3">
-                              <div className={`h-4.5 w-4.5 rounded-full border flex items-center justify-center transition ${
+                            <div className="flex items-center gap-3.5">
+                              <div className={`h-5 w-5 rounded-full border flex items-center justify-center transition shrink-0 ${
                                 isDone ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 bg-white'
                               }`}>
-                                {isDone && <Check className="h-3 w-3 stroke-[3]" />}
+                                {isDone && <Check className="h-3.5 w-3.5 stroke-[3]" />}
                               </div>
                               <div>
-                                <span className={`font-semibold ${isDone ? 'font-normal' : 'text-slate-900'}`}>{ex.ejercicio}</span>
+                                <span className={`text-sm font-bold ${isDone ? 'font-normal text-slate-400' : 'text-slate-900'}`}>{ex.ejercicio}</span>
                                 {ex.notas && (
-                                  <span className={`block text-[10px] italic mt-0.5 ${isDone ? 'text-slate-400' : 'text-slate-500'}`}>{ex.notas}</span>
+                                  <span className={`block text-xs italic mt-0.5 ${isDone ? 'text-slate-400' : 'text-slate-500'}`}>{ex.notas}</span>
                                 )}
                               </div>
                             </div>
 
-                            <div className="flex gap-4 mt-2 sm:mt-0 font-sans text-[11px] font-bold">
-                              <div>
-                                <span className="block text-[8px] font-bold text-slate-400 uppercase tracking-wider">Series</span>
-                                <span className={isDone ? 'text-slate-400' : 'text-slate-800'}>{ex.series}</span>
+                            <div className="flex gap-6 mt-3 sm:mt-0 font-sans pl-8 sm:pl-0">
+                              <div className="text-center sm:text-left">
+                                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Series</span>
+                                <span className={`text-sm font-black ${isDone ? 'text-slate-400' : 'text-slate-800'}`}>{ex.series}</span>
                               </div>
-                              <div>
-                                <span className="block text-[8px] font-bold text-slate-400 uppercase tracking-wider">Repeticiones</span>
-                                <span className={isDone ? 'text-slate-400' : 'text-slate-800'}>{ex.repeticiones}</span>
+                              <div className="text-center sm:text-left">
+                                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Repeticiones</span>
+                                <span className={`text-sm font-black ${isDone ? 'text-slate-400' : 'text-slate-800'}`}>{ex.repeticiones}</span>
                               </div>
                             </div>
                           </div>

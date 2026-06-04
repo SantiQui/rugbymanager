@@ -12,13 +12,18 @@ export const CLUB_CATEGORIES = [
 ];
 
 export const RUGBY_POSITIONS = [
-  'Pilar',
+  'Pilar Izquierdo',
   'Hooker',
+  'Pilar Derecho',
   'Segunda Línea',
-  'Tercera Línea',
+  'Ala Izquierdo',
+  'Ala Derecho',
+  'Octavo',
   'Medio Scrum',
   'Apertura',
-  'Centro',
-  'Wing',
+  'Wing Izquierdo',
+  'Primer Centro',
+  'Segundo Centro',
+  'Wing Derecho',
   'Fullback'
 ];

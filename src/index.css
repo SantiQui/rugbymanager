@@ -1,30 +1,46 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #05472A;
-  --color-secondary: #2ECC71;
+  /* ==========================================
+     PALETA INSTITUCIONAL GUAYCURÚES
+     ========================================== */
+  --color-primary: #05472A;      /* Verde oscuro principal */
+  --color-primary-hover: #03301c; 
+  --color-secondary: #2ECC71;    /* Verde brillante para acentos */
+  --color-secondary-hover: #25a25a;
+
+  /* ==========================================
+     ESCALA DE GRISES UNIFICADA (Usamos Slate)
+     ========================================== */
+  --color-surface-bg: #f8fafc;   /* Fondo general de la página (slate-50) */
+  --color-surface-card: #ffffff; /* Fondo de tarjetas y paneles */
+  --color-border-subtle: #e2e8f0;/* Bordes suaves (slate-200) */
+  --color-border-strong: #cbd5e1;/* Bordes marcados (slate-300) */
   
-  /* Dejo estas variables vivas por si algún texto quedó usándolas, pero ya no cambiarán */
-  --color-club-neutral: #121212;
-  --color-club-dark: #0a0a0a;
-  --color-club-card: #18181b;
-  --color-club-card-hover: #222226;
-  --color-club-border: #27272a;
-  --color-club-text-primary: #ffffff;
-  --color-club-text-secondary: #a1a1aa;
+  --color-text-main: #0f172a;    /* Textos oscuros (slate-900) */
+  --color-text-muted: #64748b;   /* Textos secundarios (slate-500) */
+  --color-text-light: #94a3b8;   /* Textos muy claritos (slate-400) */
+
+  /* ==========================================
+     TIPOGRAFÍA ÚNICA
+     ========================================== */
+  --font-base: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-/* Forzamos tus excepciones visuales al modo claro perpetuo */
-.text-alert-custom {
-  color: #ff4a4a !important;
+/* ==========================================
+   REGLAS GLOBALES (Aplican a todo el sistema)
+   ========================================== */
+body {
+  font-family: var(--font-base);
+  background-color: var(--color-surface-bg);
+  color: var(--color-text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
 }
 
-.bg-rose-50 {
-  background-color: #fff1f2 !important;
-  border-color: #fecdd3 !important;
-}
-
-.bg-purple-50 {
-  background-color: #faf5ff !important;
-  border-color: #e9d5ff !important;
+/* Limpiamos estilos de botones e inputs para que hereden la fuente */
+button, input, select, textarea {
+  font-family: inherit;
 }
