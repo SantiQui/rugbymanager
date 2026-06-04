@@ -65,9 +65,6 @@ export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: (role
           <div>
             <div className="flex justify-between items-center mb-2">
               <label className="text-gray-400 text-xs font-bold tracking-wider">CONTRASEÑA</label>
-              <button type="button" className="text-emerald-500 text-xs hover:text-emerald-400">
-                ¿Olvidó su contraseña?
-              </button>
             </div>
             <input
               type="password"
