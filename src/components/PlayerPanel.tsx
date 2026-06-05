@@ -616,98 +616,133 @@ export default function PlayerPanel({
 
       {/* TAB: PRESCRIBED GYM GYMNASTICS REGIMENS OR ROUTINES */}
       {activeTab === 'routines' && (
-        <div id="player-routines-tab" className="space-y-6">
+        <div id="player-routines-tab" className="space-y-6 animate-in fade-in duration-155">
           <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 font-sans text-sm text-slate-700 flex items-start gap-3 shadow-xs">
-            <Info className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+            <Calendar className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
             <div>
-              <strong className="text-slate-900 block mb-1">Planillas de Acondicionamiento</strong> 
-              Revise las rutinas elaboradas por sus profesores según los focos tácticos de entrenamiento. Puede tachar las series ejecutadas conforme las realiza en el gimnasio del club.
+              <strong className="text-slate-900 block mb-1">Calendario de Acondicionamiento Mensual</strong> 
+              Revise las planillas elaboradas por los preparadores físicos. Al finalizar su sesión en el gimnasio del club, no olvide marcar la rutina como completada para registrar su asistencia en el sistema.
             </div>
           </div>
 
           {assignedRoutines.length === 0 ? (
             <div className="rounded-xl border border-slate-200 bg-white py-12 text-center text-slate-400">
               <Dumbbell className="h-12 w-12 text-slate-300 mx-auto mb-3" />
-              <p className="font-sans font-bold text-slate-700 text-base">No conserva ninguna gama de ejercicios actualmente.</p>
-              <p className="text-sm text-slate-400 mt-1">Los profesores y preparadores físicos publicarán sus rutinas aquí mismo.</p>
+              <p className="font-sans font-bold text-slate-700 text-base">Sin plan de entrenamiento activo.</p>
+              <p className="text-sm text-slate-400 mt-1">Tu cuerpo técnico todavía no asignó un bloque de ejercicios para este mes.</p>
             </div>
           ) : (
-            <div className="space-y-6">
-              {assignedRoutines.map(r => (
-                <div key={r.id} className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              
+              {/* Columna Principal: Las Rutinas */}
+              <div className="lg:col-span-2 space-y-6">
+                {assignedRoutines.map(r => {
+                  const hoy = new Date().toISOString().split('T')[0];
                   
-                  {/* Routine card header */}
-                  <div className="border-b border-slate-100 bg-slate-50/70 p-5 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-                    <div>
-                      <div className="flex items-center gap-1.5 text-xs text-slate-500 font-bold uppercase tracking-wide">
-                        <Calendar className="h-4 w-4 text-slate-400" />
-                        <span>Publicado: {r.fechaAsignacion}</span>
-                      </div>
-                      <h4 className="mt-1.5 font-sans font-black text-slate-900 text-lg">{r.titulo}</h4>
-                      {r.descripcion && (
-                        <p className="mt-1 font-sans text-sm text-slate-600 italic">{r.descripcion}</p>
-                      )}
-                    </div>
-                    <div className="text-left sm:text-right">
-                      <span className="block text-xs text-slate-400 font-bold uppercase mb-0.5">Asignado por</span>
-                      <strong className="text-slate-900 font-black text-sm block">{r.profesorNombre}</strong>
-                    </div>
-                  </div>
+                  // Verificamos si el jugador ya completó esta rutina hoy
+                  const yaEntrenoHoy = player.historialRutinas?.some(
+                    h => h.rutinaId === r.id && h.fecha === hoy && h.completado
+                  );
 
-                  {/* Exercises Checklist interactive body */}
-                  <div className="p-5 font-sans">
-                    <span className="block font-bold text-slate-500 text-xs uppercase mb-3">Guía de ejercicios del preparador físico</span>
-                    
-                    <div className="space-y-3">
-                      {r.ejercicios.map((ex, idx) => {
-                        const exerciseKey = `${r.id}_${idx}`;
-                        const isDone = completedExercises[exerciseKey] || false;
-
-                        return (
-                          <div 
-                            key={idx}
-                            onClick={() => handleToggleExerciseCheck(exerciseKey)}
-                            className={`flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 rounded-lg border transition cursor-pointer ${
-                              isDone 
-                                ? 'bg-slate-50 border-slate-200 text-slate-400 line-through' 
-                                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50/80'
-                            }`}
-                          >
-                            <div className="flex items-center gap-3.5">
-                              <div className={`h-5 w-5 rounded-full border flex items-center justify-center transition shrink-0 ${
-                                isDone ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 bg-white'
-                              }`}>
-                                {isDone && <Check className="h-3.5 w-3.5 stroke-[3]" />}
-                              </div>
-                              <div>
-                                <span className={`text-sm font-bold ${isDone ? 'font-normal text-slate-400' : 'text-slate-900'}`}>{ex.ejercicio}</span>
-                                {ex.notas && (
-                                  <span className={`block text-xs italic mt-0.5 ${isDone ? 'text-slate-400' : 'text-slate-500'}`}>{ex.notas}</span>
-                                )}
-                              </div>
-                            </div>
-
-                            <div className="flex gap-6 mt-3 sm:mt-0 font-sans pl-8 sm:pl-0">
-                              <div className="text-center sm:text-left">
-                                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Series</span>
-                                <span className={`text-sm font-black ${isDone ? 'text-slate-400' : 'text-slate-800'}`}>{ex.series}</span>
-                              </div>
-                              <div className="text-center sm:text-left">
-                                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Repeticiones</span>
-                                <span className={`text-sm font-black ${isDone ? 'text-slate-400' : 'text-slate-800'}`}>{ex.repeticiones}</span>
-                              </div>
-                            </div>
+                  return (
+                    <div key={r.id} className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden flex flex-col">
+                      
+                      <div className="border-b border-slate-100 bg-slate-50/70 p-5">
+                        <div className="flex justify-between items-start gap-4">
+                          <div>
+                            <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-200 px-2.5 py-0.5 text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-2">
+                              Plan Mensual
+                            </span>
+                            <h4 className="font-sans font-black text-slate-900 text-lg">{r.titulo}</h4>
+                            {r.diasSemana && r.diasSemana.length > 0 && (
+                              <p className="mt-1.5 font-sans text-xs text-emerald-700 font-bold flex items-center gap-1.5">
+                                <Clock className="h-3.5 w-3.5" /> 
+                                Días de carga: {r.diasSemana.join(', ')}
+                              </p>
+                            )}
                           </div>
-                        );
-                      })}
-                    </div>
-                  </div>
+                          <div className="text-right">
+                            <span className="block text-[10px] text-slate-400 font-bold uppercase mb-0.5">Preparador</span>
+                            <strong className="text-slate-800 font-black text-xs block">{r.profesorNombre}</strong>
+                          </div>
+                        </div>
+                      </div>
 
+                      <div className="p-5 font-sans flex-grow">
+                        <span className="block font-bold text-slate-500 text-[10px] uppercase tracking-wider mb-3">Guía de Ejercicios</span>
+                        <div className="space-y-3">
+                          {r.ejercicios.map((ex, idx) => (
+                            <div key={idx} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 rounded-lg border border-slate-100 bg-slate-50/50">
+                              <div>
+                                <span className="text-sm font-bold text-slate-800">{ex.ejercicio}</span>
+                                {ex.notas && <span className="block text-xs italic text-slate-500 mt-0.5">{ex.notas}</span>}
+                              </div>
+                              <div className="flex gap-4 mt-2 sm:mt-0">
+                                <div className="text-center">
+                                  <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Series</span>
+                                  <span className="text-sm font-black text-slate-700">{ex.series}</span>
+                                </div>
+                                <div className="text-center">
+                                  <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Reps</span>
+                                  <span className="text-sm font-black text-slate-700">{ex.repeticiones}</span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Botón de Finalización (Registro en el historial) */}
+                      <div className="p-5 border-t border-slate-100 bg-white">
+                        {yaEntrenoHoy ? (
+                          <div className="w-full rounded-lg bg-emerald-50 border border-emerald-200 py-3 text-center flex items-center justify-center gap-2">
+                            <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                            <span className="font-sans text-sm font-bold text-emerald-800">¡Entrenamiento Registrado Hoy!</span>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const nuevoRegistro = { fecha: hoy, rutinaId: r.id, completado: true };
+                              const historialActualizado = [...(player.historialRutinas || []), nuevoRegistro];
+                              onUpdatePlayer({ ...player, historialRutinas: historialActualizado });
+                            }}
+                            className="w-full rounded-lg bg-slate-900 py-3 text-sm font-bold text-white hover:bg-slate-800 transition cursor-pointer shadow-sm flex items-center justify-center gap-2"
+                          >
+                            <Dumbbell className="h-4 w-4" />
+                            Finalizar y Registrar Sesión
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Columna Secundaria: Estadísticas del Jugador */}
+              <div className="space-y-6">
+                <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                  <h4 className="font-sans font-bold text-slate-800 text-sm border-b border-slate-100 pb-2 mb-4">
+                    Mi Rendimiento
+                  </h4>
+                  <div className="space-y-4 text-center">
+                    <div>
+                      <span className="block text-4xl font-black text-[#05472A]">
+                        {player.historialRutinas?.length || 0}
+                      </span>
+                      <span className="block text-[10px] uppercase font-bold text-slate-400 mt-1 tracking-wider">
+                        Sesiones Completadas
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 font-medium leading-relaxed bg-slate-50 p-3 rounded-lg border border-slate-100">
+                      Mantené la constancia. Los profes monitorean este panel para definir las convocatorias al fin de semana.
+                    </p>
+                  </div>
                 </div>
-              ))}
+              </div>
+
             </div>
           )}
-
         </div>
       )}
 

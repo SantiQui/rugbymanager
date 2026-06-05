@@ -41,6 +41,7 @@ export interface Player {
   fichaMedicaFecha: string | null;
   justificaciones?: JustificationDoc[]; // List of uploaded justifications (injury, study, work)
   fichajeInstalments?: FichajeInstallment[]; // Fichaje UAR installment list
+  historialRutinas?: RegistroRutina[];
 }
 
 export interface FundraiserCampaign {
@@ -88,25 +89,35 @@ export interface Match {
   tercerTiempo?: TercerTiempoData;
 }
 
-export interface Exercise {
+export interface Ejercicio {
   ejercicio: string;
-  series: string;
-  repeticiones: string;
+  series: number | string;
+  repeticiones: number | string;
   notas?: string;
 }
 
 export interface GymRoutine {
   id: string;
   titulo: string;
-  descripcion: string;
-  ejercicios: Exercise[];
-  profesorId: string;
+  descripcion?: string;
+  profesorId: string;       // <-- Este es el que faltaba
   profesorNombre: string;
-  jugadorId?: string; // Optional if assigned to a specific player
-  posicion?: string;  // Required for position-based routines (e.g. 'Primera Línea')
-  fechaAsignacion: string;
+  jugadorId?: string; 
+  posicion?: string;
+  fechaAsignacion?: string; // <-- Y este también
+  
+  // CAMPOS DEL CALENDARIO MENSUAL
+  fechaInicio: string;  
+  fechaFin: string;     
+  diasSemana: string[]; 
+  
+  ejercicios: Ejercicio[];
 }
-
+export interface RegistroRutina {
+  fecha: string;        // ej: "2026-06-05"
+  rutinaId: string;
+  completado: boolean;
+}
 export interface Attendance {
   id: string;
   fecha: string;

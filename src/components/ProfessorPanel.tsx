@@ -38,9 +38,17 @@ export default function ProfessorPanel({
   const [routPosicion, setRoutPosicion] = useState(RUGBY_POSITIONS[0]);
   const [routTitle, setRoutTitle] = useState('');
   const [routDesc, setRoutDesc] = useState('');
+  
+  // NUEVOS ESTADOS PARA EL CALENDARIO MENSUAL
+  const [routFechaInicio, setRoutFechaInicio] = useState(new Date().toISOString().split('T')[0]);
+  const [routFechaFin, setRoutFechaFin] = useState('');
+  const [routDiasSemana, setRoutDiasSemana] = useState<string[]>([]);
+  
   const [exercises, setExercises] = useState<{ ejercicio: string; series: string; repeticiones: string; notas: string }[]>([
     { ejercicio: '', series: '4', repeticiones: '8', notas: '' }
   ]);
+
+  const DIAS_SEMANA_OPCIONES = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
   // Match sheet states
   const [selectedMatchId, setSelectedMatchId] = useState('');
@@ -78,27 +86,30 @@ export default function ProfessorPanel({
   };
 
 const handleSaveAttendance = (e: React.FormEvent) => {
-    e.preventDefault(); // Evitamos que la página parpadee o se recargue
+    e.preventDefault(); 
 
-    // Armamos el objeto con los nombres exactos que pide tu modelo "Attendance"
     const newAtt = {
       id: 'att_' + Date.now(),
-      fecha: attDate,           // Tu variable de fecha
-      categoria: attCategory,   // Tu variable de categoría
-      tipo: attType,            // Tipo de actividad (Asegurate de que tu select cambie esta variable)
-      asistentes: attendancePresents // Tu arreglo de IDs de jugadores presentes
+      fecha: attDate,
+      categoria: attCategory,
+      tipo: attType,
+      asistentes: attendancePresents 
     };
     
-    // Llamamos a la API
     onAddAttendance(newAtt);
     
-    // Vaciamos el formulario silenciosamente para seguir trabajando
     setAttDate('');
     setAttendancePresents([]);
-    setAttendanceJustifieds([]); // Limpiamos los justificados también
+    setAttendanceJustifieds([]); 
   };
 
   // --- ROUTINE ACTIONS ---
+  const handleToggleDia = (dia: string) => {
+    setRoutDiasSemana(prev => 
+      prev.includes(dia) ? prev.filter(d => d !== dia) : [...prev, dia]
+    );
+  };
+
   const handleAddExerciseRow = () => {
     setExercises([...exercises, { ejercicio: '', series: '3', repeticiones: '10', notas: '' }]);
   };
@@ -123,6 +134,15 @@ const handleSaveAttendance = (e: React.FormEvent) => {
       console.log('Defina el título de la rutina gimnástica.');
       return;
     }
+    if (!routFechaInicio || !routFechaFin) {
+      console.log('Defina las fechas de inicio y fin de la rutina.');
+      return;
+    }
+    if (routDiasSemana.length === 0) {
+      console.log('Seleccione al menos un día de la semana para el entrenamiento.');
+      return;
+    }
+
     const validExercises = exercises.filter(ex => ex.ejercicio.trim() !== '');
     if (validExercises.length === 0) {
       console.log('Agregue al menos un ejercicio válido.');
@@ -137,6 +157,11 @@ const handleSaveAttendance = (e: React.FormEvent) => {
       profesorId: professor.id,
       profesorNombre: `${professor.nombre} ${professor.apellido}`,
       posicion: routPosicion,
+      
+      // Los nuevos campos para la app
+      fechaInicio: routFechaInicio,
+      fechaFin: routFechaFin,
+      diasSemana: routDiasSemana,
       fechaAsignacion: new Date().toISOString().split('T')[0],
     };
 
@@ -147,6 +172,9 @@ const handleSaveAttendance = (e: React.FormEvent) => {
     setRoutPosicion(RUGBY_POSITIONS[0]);
     setRoutTitle('');
     setRoutDesc('');
+    setRoutFechaInicio(new Date().toISOString().split('T')[0]);
+    setRoutFechaFin('');
+    setRoutDiasSemana([]);
     setExercises([{ ejercicio: '', series: '4', repeticiones: '8', notas: '' }]);
   };
 
@@ -156,7 +184,6 @@ const handleSaveAttendance = (e: React.FormEvent) => {
     const matchObj = matches.find(m => m.id === matchId);
     if (!matchObj) return;
 
-    // initialize rosters and stats
     setMatchTitulares([]);
     setMatchSuplentes([]);
     setScoreClub(0);
@@ -171,7 +198,6 @@ const handleSaveAttendance = (e: React.FormEvent) => {
   };
 
   const toggleMatchRoster = (playerId: string, target: 'titular' | 'suplente' | 'fuera') => {
-    // remove from all first
     const cleanTitulares = matchTitulares.filter(id => id !== playerId);
     const cleanSuplentes = matchSuplentes.filter(id => id !== playerId);
 
@@ -192,7 +218,7 @@ const handleSaveAttendance = (e: React.FormEvent) => {
       ...prev,
       [playerId]: {
         ...prev[playerId],
-        [statKey]: Math.max(0, value), // limit negatives
+        [statKey]: Math.max(0, value), 
       }
     }));
   };
@@ -206,7 +232,6 @@ const handleSaveAttendance = (e: React.FormEvent) => {
       return;
     }
 
-    // compile stats exclusively for selected match roster
     const activeRoster = [...matchTitulares, ...matchSuplentes];
     const finalStats: { [id: string]: PlayerStats } = {};
     activeRoster.forEach(id => {
@@ -737,7 +762,7 @@ const handleSaveAttendance = (e: React.FormEvent) => {
           <div className="lg:col-span-2 rounded-xl border border-slate-150 bg-white p-6 shadow-xs">
             <h3 className="font-sans font-bold text-slate-800 text-base mb-4 flex items-center gap-1.5">
               <PlusCircle className="h-5 w-5 text-purple-650" />
-              Diseñar Rutinas de Entrenamiento
+              Diseñar Plan de Entrenamiento Mensual
             </h3>
 
             <form onSubmit={handleSaveRoutine} className="space-y-4 text-xs font-sans">
@@ -761,7 +786,7 @@ const handleSaveAttendance = (e: React.FormEvent) => {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block text-[10px] font-bold text-slate-500 uppercase">Título de la Rutina *</label>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase">Título de la Planilla *</label>
                   <input
                     id="routine-input-titulo"
                     type="text"
@@ -771,6 +796,50 @@ const handleSaveAttendance = (e: React.FormEvent) => {
                     placeholder="Ej. Fuerza Explosiva - Scrum"
                     className="w-full rounded border border-slate-200 px-3 py-2 font-sans text-xs text-slate-850 focus:outline-hidden"
                   />
+                </div>
+              </div>
+
+              {/* Nuevos Inputs: FECHAS Y DIAS DE LA SEMANA */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase">Fecha de Inicio *</label>
+                  <input
+                    type="date"
+                    required
+                    value={routFechaInicio}
+                    onChange={(e) => setRoutFechaInicio(e.target.value)}
+                    className="w-full rounded border border-slate-200 px-3 py-2 font-sans text-xs text-slate-850 focus:outline-hidden"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase">Fecha de Finalización *</label>
+                  <input
+                    type="date"
+                    required
+                    value={routFechaFin}
+                    onChange={(e) => setRoutFechaFin(e.target.value)}
+                    className="w-full rounded border border-slate-200 px-3 py-2 font-sans text-xs text-slate-850 focus:outline-hidden"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5 pt-1">
+                <label className="block text-[10px] font-bold text-slate-500 uppercase">Días de Carga Semanal *</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {DIAS_SEMANA_OPCIONES.map(dia => (
+                    <button
+                      key={dia}
+                      type="button"
+                      onClick={() => handleToggleDia(dia)}
+                      className={`px-3 py-1 text-[10px] font-bold rounded uppercase transition-colors cursor-pointer ${
+                        routDiasSemana.includes(dia) 
+                          ? 'bg-purple-700 text-white border-purple-750 border' 
+                          : 'bg-slate-50 text-slate-500 border-slate-200 border hover:bg-slate-100'
+                      }`}
+                    >
+                      {dia}
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -874,7 +943,7 @@ const handleSaveAttendance = (e: React.FormEvent) => {
                   type="submit"
                   className="rounded-lg bg-green-700 px-5 py-2 font-bold text-white hover:bg-green-800 transition shadow-xs cursor-pointer"
                 >
-                  Asignar Rutina Fisiológica
+                  Asignar Plan Mensual
                 </button>
               </div>
 
@@ -883,19 +952,28 @@ const handleSaveAttendance = (e: React.FormEvent) => {
 
           {/* Recently assigned list */}
           <div className="rounded-xl border border-slate-150 bg-slate-50 p-5 shadow-inner space-y-4 lg:col-span-1">
-            <h4 className="font-sans font-bold text-slate-800 text-sm">Rutinas Registradas</h4>
+            <h4 className="font-sans font-bold text-slate-800 text-sm">Planes Activos</h4>
             
             <div className="space-y-3.5 max-h-[500px] overflow-y-auto pr-1">
               {routines.filter(r => r.profesorId === professor.id).length === 0 ? (
-                <p className="text-center py-8 text-slate-400 text-xs">No ha guardado rutinas deportivas en esta sesión todavía.</p>
+                <p className="text-center py-8 text-slate-400 text-xs">No ha guardado planificaciones en esta sesión todavía.</p>
               ) : (
                 routines.filter(r => r.profesorId === professor.id).map(r => {
                   return (
                     <div key={r.id} className="rounded-lg border border-slate-200 bg-white p-3.5 space-y-2 text-xs text-slate-705">
                       <div className="flex items-center justify-between">
                         <strong className="text-slate-900 block font-bold text-xs truncate max-w-[170px]">{r.titulo}</strong>
-                        <span className="text-[9px] text-slate-400 font-mono">{r.fechaAsignacion}</span>
+                        <span className="text-[9px] text-slate-400 font-mono">{r.fechaInicio.slice(5)} al {r.fechaFin.slice(5)}</span>
                       </div>
+                      
+                      <div className="flex flex-wrap gap-1 my-1">
+                        {r.diasSemana?.map(dia => (
+                          <span key={dia} className="bg-purple-100 text-purple-800 text-[8px] font-bold px-1.5 py-0.5 rounded uppercase">
+                            {dia.slice(0, 3)}
+                          </span>
+                        ))}
+                      </div>
+
                       <p className="text-[11px] text-slate-500 italic truncate">{r.descripcion}</p>
                       
                       <div className="border-t border-slate-100 pt-2 flex items-center justify-between text-[11px] font-sans">
