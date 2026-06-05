@@ -38,8 +38,8 @@ export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: (role
       <div className="bg-gray-800 p-8 rounded-xl shadow-2xl max-w-md w-full border border-gray-700">
         
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-white tracking-wider">CLUB GUAYCURÚES</h1>
-          <p className="text-emerald-500 text-sm tracking-widest mt-1">SUNCHALES • PORTAL DE GESTIÓN</p>
+          <h1 className="text-2xl font-bold text-white tracking-wider">PORTAL DE GESTIÓN</h1>
+          <p className="text-emerald-500 text-sm tracking-widest mt-1">GUAYCURUES RUGBY SUNCHALES</p>
         </div>
 
         {error && (
