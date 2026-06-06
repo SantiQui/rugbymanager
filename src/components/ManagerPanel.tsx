@@ -595,6 +595,54 @@ export default function ManagerPanel({
       {viewingPlayerMedical && (
         <MedicalFileViewer player={viewingPlayerMedical} onClose={() => setViewingPlayerMedical(null)} />
       )}
+
+      {/* MODAL PARA CREAR CAMPAÑA */}
+      {isCreatingCampaign && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-md bg-white rounded-xl shadow-2xl p-6">
+            <h4 className="font-bold mb-4 text-gray-900">Crear Nueva Campaña</h4>
+            <form onSubmit={handleCreateCampaignSubmit} className="space-y-4">
+              <input 
+                type="text" 
+                required 
+                placeholder="Título de la Campaña (Ej: Rifa de Pascua)" 
+                value={newCampTitle} 
+                onChange={e => setNewCampTitle(e.target.value)} 
+                className="w-full border border-gray-300 p-2 rounded text-sm text-gray-900" 
+              />
+              <textarea 
+                required 
+                placeholder="Descripción o detalles del objetivo..." 
+                value={newCampDesc} 
+                onChange={e => setNewCampDesc(e.target.value)} 
+                className="w-full border border-gray-300 p-2 rounded text-sm text-gray-900 h-24 resize-none" 
+              />
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[10px] text-gray-500 block mb-1 font-bold uppercase">Fecha Inicio</label>
+                  <input type="date" required value={newCampDesde} onChange={e => setNewCampDesde(e.target.value)} className="w-full border border-gray-300 p-2 rounded text-sm text-gray-900" />
+                </div>
+                <div>
+                  <label className="text-[10px] text-gray-500 block mb-1 font-bold uppercase">Fecha Fin</label>
+                  <input type="date" required value={newCampHasta} onChange={e => setNewCampHasta(e.target.value)} className="w-full border border-gray-300 p-2 rounded text-sm text-gray-900" />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[10px] text-gray-500 block mb-1 font-bold uppercase">Meta por Jugador (Ej: 10 números)</label>
+                <input type="number" min="1" required value={newCampQty} onChange={e => setNewCampQty(Number(e.target.value))} className="w-full border border-gray-300 p-2 rounded text-sm text-gray-900" />
+              </div>
+
+              <div className="flex justify-end gap-2 mt-4 pt-2">
+                <button type="button" onClick={() => setIsCreatingCampaign(false)} className="px-4 py-2 border rounded font-bold text-sm text-gray-600 hover:bg-gray-50 transition-colors">Cancelar</button>
+                <button type="submit" className="px-4 py-2 bg-gray-900 font-bold text-sm text-white rounded hover:bg-black transition-colors">Guardar Campaña</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
+
   );
 }
