@@ -11,7 +11,7 @@ import {
   getManagers, getProfessors, getPlayers, getMatches, getRoutines, getAttendances, getCampaigns,
   saveManager, saveProfessor, savePlayer, saveMatch, saveRoutine, saveAttendance, saveCampaign,
   // NUEVO: Importamos las funciones para borrar en la base de datos
-  deleteManager, deletePlayer, deleteMatch
+  deleteManager, deletePlayer, deleteMatch, deleteProfessor
 } from './services/api';
 
 export default function App() {
@@ -101,7 +101,12 @@ export default function App() {
       loadDatabase(); 
     } catch (e) { console.error(e); } 
   };
-
+const handleDeleteProfessor = async (id: string) => { 
+  try { 
+    await deleteProfessor(id); 
+    loadDatabase(); 
+  } catch (e) { console.error(e); } 
+};
   const handleAddMatch = async (newMatch: Match) => { try { await saveMatch(newMatch); loadDatabase(); } catch (e) { console.error(e); } };
   const handleUpdateMatch = async (updatedMatch: Match) => { try { await saveMatch(updatedMatch); loadDatabase(); } catch (e) { console.error(e); } };
   
@@ -182,7 +187,7 @@ export default function App() {
 
                 {currentRole === 'manager' && (
                   activeManagerObj ? (
-                    <ManagerPanel manager={activeManagerObj} players={players} professors={professors} matches={matches} campaigns={campaigns} onUpdateCampaigns={handleUpdateCampaigns} onAddPlayer={handleAddPlayer} onUpdatePlayer={handleUpdatePlayer} onDeletePlayer={handleDeletePlayer} onAddProfessor={handleAddProfessor} onAddMatch={handleAddMatch} onDeleteMatch={handleDeleteMatch} onUpdateMatch={handleUpdateMatch} />
+                    <ManagerPanel manager={activeManagerObj} players={players} professors={professors} matches={matches} campaigns={campaigns} onUpdateCampaigns={handleUpdateCampaigns} onAddPlayer={handleAddPlayer} onUpdatePlayer={handleUpdatePlayer} onDeletePlayer={handleDeletePlayer} onAddProfessor={handleAddProfessor} onAddMatch={handleAddMatch} onDeleteMatch={handleDeleteMatch} onUpdateMatch={handleUpdateMatch} onDeleteProfessor={handleDeleteProfessor} />
                   ) : (
                     <div className="text-center py-12 text-gray-500">Hubo un inconveniente al seleccionar el manager activo.</div>
                   )

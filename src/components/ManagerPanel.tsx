@@ -129,7 +129,6 @@ export default function ManagerPanel({
 
   const handleSubmitPlayer = (e: React.FormEvent) => {
     e.preventDefault();
-    // Juntamos las posiciones válidas en un solo texto separado por comas
     const posicionesFinales = [playPos1, playPos2, playPos3].filter(pos => pos !== '').join(', ');
 
     if (playerEditId) {
@@ -213,11 +212,6 @@ export default function ManagerPanel({
     setNewCampTitle(''); setNewCampDesc(''); setIsCreatingCampaign(false);
   };
 
-  const handleUpdatePlayerCampaignSales = (campaignId: string, playerId: string, amount: number) => {
-    const updated = campaigns.map(c => c.id === campaignId ? { ...c, ventasRegistradas: { ...c.ventasRegistradas, [playerId]: Math.max(0, amount) } } : c);
-    onUpdateCampaigns(updated);
-  };
-
   const handleDeleteCampaign = (campaignId: string) => {
     if (window.confirm('¿Eliminar campaña?')) onUpdateCampaigns(campaigns.filter(c => c.id !== campaignId));
   };
@@ -290,7 +284,9 @@ export default function ManagerPanel({
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-1.5">
                           <button type="button" onClick={() => handleOpenEditPlayer(p)} className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-200 rounded-md transition-colors cursor-pointer" title="Modificar"><Edit className="h-4 w-4" /></button>
-                          <button type="button" onClick={() => onDeletePlayer(p.id)} className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer" title="Borrar"><Trash2 className="h-4 w-4" /></button>
+                          
+                          {/* NUEVO: Confirmación al borrar Jugador */}
+                          <button type="button" onClick={() => { if(window.confirm(`¿Estás seguro de eliminar a ${p.nombre} ${p.apellido}?`)) onDeletePlayer(p.id); }} className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer" title="Borrar"><Trash2 className="h-4 w-4" /></button>
                         </div>
                       </td>
                     </tr>
@@ -321,8 +317,9 @@ export default function ManagerPanel({
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-1.5">
                           <button type="button" onClick={() => handleOpenEditProf(p)} className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-200 rounded-md transition-colors cursor-pointer" title="Modificar"><Edit className="h-4 w-4" /></button>
-                          <button type="button" onClick={() => { if(window.confirm(`¿Borrar a ${p.nombre}?`)) { onDeleteProfessor && onDeleteProfessor(p.id) } }} className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer" title="Borrar"><Trash2 className="h-4 w-4" /></button>
-                        </div>
+                          
+                          {/* Confirmación al borrar Profesor */}
+<button type="button" onClick={() => { if(window.confirm(`¿Borrar al Prof. ${p.nombre} ${p.apellido}?`)) { onDeleteProfessor && onDeleteProfessor(p.id) } }} className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer" title="Borrar"><Trash2 className="h-4 w-4" /></button>                        </div>
                       </td>
                     </tr>
                   ))}
@@ -348,7 +345,9 @@ export default function ManagerPanel({
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-1.5">
                         <button type="button" onClick={() => handleOpenEditMatch(m)} className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-200 rounded-md transition-colors cursor-pointer" title="Modificar"><Edit className="h-4 w-4" /></button>
-                        <button type="button" onClick={() => onDeleteMatch(m.id)} className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer" title="Borrar"><Trash2 className="h-4 w-4" /></button>
+                        
+                        {/* NUEVO: Confirmación al borrar Partido */}
+                        <button type="button" onClick={() => { if(window.confirm(`¿Eliminar partido programado contra ${m.rival}?`)) onDeleteMatch(m.id); }} className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer" title="Borrar"><Trash2 className="h-4 w-4" /></button>
                       </div>
                     </td>
                   </tr>

@@ -44,6 +44,12 @@ export const deleteMatch = async (id: string) => {
   });
   if (!response.ok) throw new Error('Error al borrar partido');
 };
+export const deleteProfessor = async (id: string) => {
+  const response = await fetch(`${API_URL}/professors/${id}/`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) throw new Error('Error al borrar profesor');
+};
 // ==================== LOGIN ====================
 export const loginUser = (credentials: any) => fetchAPI('/login', 'POST', credentials);
 
