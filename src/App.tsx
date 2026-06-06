@@ -21,6 +21,11 @@ export default function App() {
     return (localStorage.getItem('userRole') as UserRole) || 'admin';
   });
   
+  // NUEVO: Estado para guardar el DNI del usuario que inició sesión
+  const [currentUserDoc, setCurrentUserDoc] = useState<string | null>(() => {
+    return localStorage.getItem('userDoc');
+  });
+  
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const [managers, setManagers] = useState<Manager[]>([]);
@@ -31,9 +36,8 @@ export default function App() {
   const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [campaigns, setCampaigns] = useState<FundraiserCampaign[]>([]);
 
-  // SOLUCIÓN: Agregamos el parámetro "showSpinner"
   const loadDatabase = async (showSpinner = true) => {
-    if (showSpinner) setIsLoading(true); // Solo prende la ruedita si se lo pedimos
+    if (showSpinner) setIsLoading(true); 
     try {
       const [dbManagers, dbProfessors, dbPlayers, dbMatches, dbRoutines, dbAttendances, dbCampaigns] = await Promise.all([
         getManagers(), getProfessors(), getPlayers(), getMatches(), getRoutines(), getAttendances(), getCampaigns()
@@ -53,25 +57,29 @@ export default function App() {
   };
 
   useEffect(() => {
-    // Al entrar por primera vez, SÍ mostramos la ruedita
     if (isAuthenticated) loadDatabase(true);
   }, [isAuthenticated]);
 
-  const handleLoginSuccess = (backendRole: string) => {
+  // NUEVO: Ahora recibimos también el DNI (userDoc) desde el LoginScreen
+  const handleLoginSuccess = (backendRole: string, userDoc: string) => {
     const role = backendRole.toLowerCase() as UserRole;
     setCurrentRole(role);
+    setCurrentUserDoc(userDoc);
     setIsAuthenticated(true);
+    
     localStorage.setItem('userRole', role);
+    localStorage.setItem('userDoc', userDoc); // Guardamos el DNI en el navegador
     localStorage.setItem('isAuthenticated', 'true');
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    setCurrentUserDoc(null);
     localStorage.removeItem('userRole');
+    localStorage.removeItem('userDoc'); // Borramos el DNI al salir
     localStorage.removeItem('isAuthenticated');
   };
 
-  // SOLUCIÓN: Todas las acciones ahora usan loadDatabase(false) para recargar en silencio
   const handleAddManager = async (newM: Manager) => { try { await saveManager(newM); loadDatabase(false); } catch (e) { console.error(e); } };
   const handleUpdateManager = async (updatedM: Manager) => { try { await saveManager(updatedM); loadDatabase(false); } catch (e) { console.error(e); } };
   const handleDeleteManager = async (id: string) => { try { await deleteManager(id); loadDatabase(false); } catch (e) { console.error(e); } };
@@ -103,9 +111,10 @@ export default function App() {
     setCampaigns(updatedCampaigns);
   };
 
-  const activeManagerObj = managers[0] || null;
-  const activeProfessorObj = professors[0] || null;
-  const activePlayerObj = players[0] || null;
+  // SOLUCIÓN DEFINITIVA: Ahora buscamos el objeto exacto que coincide con el DNI ingresado
+  const activeManagerObj = managers.find(m => m.documento === currentUserDoc) || null;
+  const activeProfessorObj = professors.find(p => p.documento === currentUserDoc) || null;
+  const activePlayerObj = players.find(p => p.documento === currentUserDoc) || null;
 
   if (!isAuthenticated) {
     return (
@@ -174,7 +183,7 @@ export default function App() {
                       onUpdateMatch={handleUpdateMatch} 
                     />
                   ) : (
-                    <div className="text-center py-12 text-gray-500">Hubo un inconveniente al seleccionar el manager activo.</div>
+                    <div className="text-center py-12 text-gray-500">Hubo un inconveniente al seleccionar el manager activo. Revise que su DNI esté cargado en el sistema.</div>
                   )
                 )}
 
@@ -182,7 +191,7 @@ export default function App() {
                   activeProfessorObj ? (
                     <ProfessorPanel professor={activeProfessorObj} players={players} matches={matches} routines={routines} attendances={attendances} onAddRoutine={handleAddRoutine} onAddAttendance={handleAddAttendance} onUpdateMatchStats={handleUpdateMatchStats} />
                   ) : (
-                    <div className="text-center py-12 text-gray-500">No hay profesores cargados.</div>
+                    <div className="text-center py-12 text-gray-500">Hubo un inconveniente. Su DNI no figura en la lista de Profesores.</div>
                   )
                 )}
 
@@ -190,7 +199,7 @@ export default function App() {
                   activePlayerObj ? (
                     <PlayerPanel player={activePlayerObj} matches={matches} routines={routines} campaigns={campaigns} onUpdateCampaigns={handleUpdateCampaigns} onUpdatePlayer={handleUpdatePlayer} />
                   ) : (
-                    <div className="text-center py-12 text-gray-500">No hay jugadores registrados en esta categoría deportiva.</div>
+                    <div className="text-center py-12 text-gray-500">Hubo un inconveniente. Su DNI no figura en la lista de Jugadores.</div>
                   )
                 )}
               </>

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { loginUser } from '../services/api';
 
-// Modificamos la prop para que pueda enviar el rol hacia arriba
-export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: (role: string) => void }) {
+// 1. Agregamos "userDoc: string" acá arriba para que el componente sepa que tiene que enviarlo
+export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: (role: string, userDoc: string) => void }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -14,16 +14,14 @@ export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: (role
     setIsLoading(true);
 
     try {
-      // Cambio clave: usamos loginUser y le pasamos el objeto con las credenciales
       const result = await loginUser({ username, password });
       
       if (result.success) {
-        // Le pasamos el rol que devolvió el backend a la función padre
         if (onLoginSuccess) {
-          onLoginSuccess(result.role); 
+          // 2. Le pasamos el "username" (que es el DNI) como segundo dato a tu App.tsx
+          onLoginSuccess(result.role, username); 
         }
       } else {
-        // Si el backend dice success: false, mostramos el mensaje de error de Django
         setError(result.message || 'Usuario o contraseña incorrectos.');
       }
     } catch (err) {
