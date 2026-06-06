@@ -21,6 +21,7 @@ interface ManagerPanelProps {
   onAddMatch: (match: Match) => void;
   onDeleteMatch: (id: string) => void;
   onUpdateMatch?: (match: Match) => void;
+  
 }
 
 export default function ManagerPanel({
