@@ -10,12 +10,10 @@ import { ShieldCheck, LogOut } from 'lucide-react';
 import { 
   getManagers, getProfessors, getPlayers, getMatches, getRoutines, getAttendances, getCampaigns,
   saveManager, saveProfessor, savePlayer, saveMatch, saveRoutine, saveAttendance, saveCampaign,
-  // NUEVO: Importamos las funciones para borrar en la base de datos
   deleteManager, deletePlayer, deleteMatch, deleteProfessor
 } from './services/api';
 
 export default function App() {
-  // 1. LEER LA MEMORIA AL ARRANCAR
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     return localStorage.getItem('isAuthenticated') === 'true';
   });
@@ -23,7 +21,6 @@ export default function App() {
     return (localStorage.getItem('userRole') as UserRole) || 'admin';
   });
   
-  // ESTADO DE CARGA (Para la ruedita al hacer F5)
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const [managers, setManagers] = useState<Manager[]>([]);
@@ -34,8 +31,9 @@ export default function App() {
   const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [campaigns, setCampaigns] = useState<FundraiserCampaign[]>([]);
 
-  const loadDatabase = async () => {
-    setIsLoading(true); // Prende la ruedita de carga
+  // SOLUCIÓN: Agregamos el parámetro "showSpinner"
+  const loadDatabase = async (showSpinner = true) => {
+    if (showSpinner) setIsLoading(true); // Solo prende la ruedita si se lo pedimos
     try {
       const [dbManagers, dbProfessors, dbPlayers, dbMatches, dbRoutines, dbAttendances, dbCampaigns] = await Promise.all([
         getManagers(), getProfessors(), getPlayers(), getMatches(), getRoutines(), getAttendances(), getCampaigns()
@@ -50,84 +48,56 @@ export default function App() {
     } catch (error) {
       console.error("Error al cargar la base de datos:", error);
     } finally {
-      setIsLoading(false); // Apaga la ruedita cuando termina
+      if (showSpinner) setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    if (isAuthenticated) loadDatabase();
+    // Al entrar por primera vez, SÍ mostramos la ruedita
+    if (isAuthenticated) loadDatabase(true);
   }, [isAuthenticated]);
 
-  // 2. GUARDAR LA MEMORIA AL INICIAR SESIÓN
   const handleLoginSuccess = (backendRole: string) => {
     const role = backendRole.toLowerCase() as UserRole;
     setCurrentRole(role);
     setIsAuthenticated(true);
-    
-    // Guardamos en el navegador
     localStorage.setItem('userRole', role);
     localStorage.setItem('isAuthenticated', 'true');
   };
 
-  // 3. BORRAR LA MEMORIA AL CERRAR SESIÓN
   const handleLogout = () => {
     setIsAuthenticated(false);
-    
-    // Limpiamos el navegador
     localStorage.removeItem('userRole');
     localStorage.removeItem('isAuthenticated');
   };
 
-  // Funciones de guardado SILENCIOSAS (sin alerts)
-  const handleAddManager = async (newM: Manager) => { try { await saveManager(newM); loadDatabase(); } catch (e) { console.error(e); } };
-  const handleUpdateManager = async (updatedM: Manager) => { try { await saveManager(updatedM); loadDatabase(); } catch (e) { console.error(e); } };
-  
-  // NUEVO: Funciones de borrado que hablan con la base de datos
-  const handleDeleteManager = async (id: string) => { 
-    try { 
-      await deleteManager(id); 
-      loadDatabase(); 
-    } catch (e) { console.error(e); } 
-  };
+  // SOLUCIÓN: Todas las acciones ahora usan loadDatabase(false) para recargar en silencio
+  const handleAddManager = async (newM: Manager) => { try { await saveManager(newM); loadDatabase(false); } catch (e) { console.error(e); } };
+  const handleUpdateManager = async (updatedM: Manager) => { try { await saveManager(updatedM); loadDatabase(false); } catch (e) { console.error(e); } };
+  const handleDeleteManager = async (id: string) => { try { await deleteManager(id); loadDatabase(false); } catch (e) { console.error(e); } };
 
-  const handleAddProfessor = async (newProf: Professor) => { try { await saveProfessor(newProf); loadDatabase(); } catch (e) { console.error(e); } };
-  const handleAddPlayer = async (newP: Player) => { try { await savePlayer(newP); loadDatabase(); } catch (e) { console.error(e); } };
-  const handleUpdatePlayer = async (updatedP: Player) => { try { await savePlayer(updatedP); loadDatabase(); } catch (e) { console.error(e); } };
-  
-  // NUEVO: Función de borrado de jugador asíncrona
-  const handleDeletePlayer = async (id: string) => { 
-    try { 
-      await deletePlayer(id); 
-      loadDatabase(); 
-    } catch (e) { console.error(e); } 
-  };
-const handleDeleteProfessor = async (id: string) => { 
-  try { 
-    await deleteProfessor(id); 
-    loadDatabase(); 
-  } catch (e) { console.error(e); } 
-};
-  const handleAddMatch = async (newMatch: Match) => { try { await saveMatch(newMatch); loadDatabase(); } catch (e) { console.error(e); } };
-  const handleUpdateMatch = async (updatedMatch: Match) => { try { await saveMatch(updatedMatch); loadDatabase(); } catch (e) { console.error(e); } };
-  
-  // NUEVO: Función de borrado de partido asíncrona
-  const handleDeleteMatch = async (id: string) => { 
-    try { 
-      await deleteMatch(id); 
-      loadDatabase(); 
-    } catch (e) { console.error(e); } 
-  };
+  const handleAddProfessor = async (newProf: Professor) => { try { await saveProfessor(newProf); loadDatabase(false); } catch (e) { console.error(e); } };
+  const handleUpdateProfessor = async (updatedProf: Professor) => { try { await saveProfessor(updatedProf); loadDatabase(false); } catch (e) { console.error(e); } };
+  const handleDeleteProfessor = async (id: string) => { try { await deleteProfessor(id); loadDatabase(false); } catch (e) { console.error(e); } };
+
+  const handleAddPlayer = async (newP: Player) => { try { await savePlayer(newP); loadDatabase(false); } catch (e) { console.error(e); } };
+  const handleUpdatePlayer = async (updatedP: Player) => { try { await savePlayer(updatedP); loadDatabase(false); } catch (e) { console.error(e); } };
+  const handleDeletePlayer = async (id: string) => { try { await deletePlayer(id); loadDatabase(false); } catch (e) { console.error(e); } };
+
+  const handleAddMatch = async (newMatch: Match) => { try { await saveMatch(newMatch); loadDatabase(false); } catch (e) { console.error(e); } };
+  const handleUpdateMatch = async (updatedMatch: Match) => { try { await saveMatch(updatedMatch); loadDatabase(false); } catch (e) { console.error(e); } };
+  const handleDeleteMatch = async (id: string) => { try { await deleteMatch(id); loadDatabase(false); } catch (e) { console.error(e); } };
 
   const handleUpdateMatchStats = async (matchId: string, titulares: string[], suplentes: string[], stats: { [playerId: string]: PlayerStats }, clubScore: number, rivalScore: number) => {
     const matchToUpdate = matches.find(m => m.id === matchId);
     if (matchToUpdate) {
       const updatedMatch = { ...matchToUpdate, estado: 'Jugado' as const, titulares, suplentes, estadisticas: stats, resultadoClub: clubScore, resultadoRival: rivalScore };
-      try { await saveMatch(updatedMatch); loadDatabase(); } catch (e) { console.error(e); }
+      try { await saveMatch(updatedMatch); loadDatabase(false); } catch (e) { console.error(e); }
     }
   };
 
-  const handleAddRoutine = async (newRoutine: GymRoutine) => { try { await saveRoutine(newRoutine); loadDatabase(); } catch (e) { console.error(e); } };
-  const handleAddAttendance = async (newAtt: Attendance) => { try { await saveAttendance(newAtt); loadDatabase(); } catch (e) { console.error(e); } };
+  const handleAddRoutine = async (newRoutine: GymRoutine) => { try { await saveRoutine(newRoutine); loadDatabase(false); } catch (e) { console.error(e); } };
+  const handleAddAttendance = async (newAtt: Attendance) => { try { await saveAttendance(newAtt); loadDatabase(false); } catch (e) { console.error(e); } };
   const handleUpdateCampaigns = async (newCampaigns: FundraiserCampaign[] | ((prev: FundraiserCampaign[]) => FundraiserCampaign[])) => {
     const updatedCampaigns = typeof newCampaigns === 'function' ? newCampaigns(campaigns) : newCampaigns;
     setCampaigns(updatedCampaigns);
@@ -173,7 +143,6 @@ const handleDeleteProfessor = async (id: string) => {
 
           <div id="active-panel-wrapper" className="bg-white border border-gray-200 rounded-xl p-6 shadow-xl animate-in fade-in duration-300 transition-colors">
             
-            {/* CONDICIONAL: Si está cargando muestra la ruedita, sino muestra los paneles */}
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-20 opacity-70">
                 <div className="h-10 w-10 animate-spin rounded-full border-4 border-emerald-200 border-t-emerald-600 mb-4"></div>
@@ -187,7 +156,23 @@ const handleDeleteProfessor = async (id: string) => {
 
                 {currentRole === 'manager' && (
                   activeManagerObj ? (
-                    <ManagerPanel manager={activeManagerObj} players={players} professors={professors} matches={matches} campaigns={campaigns} onUpdateCampaigns={handleUpdateCampaigns} onAddPlayer={handleAddPlayer} onUpdatePlayer={handleUpdatePlayer} onDeletePlayer={handleDeletePlayer} onAddProfessor={handleAddProfessor} onAddMatch={handleAddMatch} onDeleteMatch={handleDeleteMatch} onUpdateMatch={handleUpdateMatch} onDeleteProfessor={handleDeleteProfessor} />
+                    <ManagerPanel 
+                      manager={activeManagerObj} 
+                      players={players} 
+                      professors={professors} 
+                      matches={matches} 
+                      campaigns={campaigns} 
+                      onUpdateCampaigns={handleUpdateCampaigns} 
+                      onAddPlayer={handleAddPlayer} 
+                      onUpdatePlayer={handleUpdatePlayer} 
+                      onDeletePlayer={handleDeletePlayer} 
+                      onAddProfessor={handleAddProfessor} 
+                      onUpdateProfessor={handleUpdateProfessor}
+                      onDeleteProfessor={handleDeleteProfessor}
+                      onAddMatch={handleAddMatch} 
+                      onDeleteMatch={handleDeleteMatch} 
+                      onUpdateMatch={handleUpdateMatch} 
+                    />
                   ) : (
                     <div className="text-center py-12 text-gray-500">Hubo un inconveniente al seleccionar el manager activo.</div>
                   )
