@@ -25,7 +25,25 @@ const fetchAPI = async (endpoint: string, method: string = 'GET', body: any = nu
     throw error;
   }
 };
+export const deletePlayer = async (id: string) => {
+  const response = await fetch(`${API_URL}/players/${id}/`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) throw new Error('Error al borrar jugador');
+};
+export const deleteManager = async (id: string) => {
+  const response = await fetch(`${API_URL}/managers/${id}/`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) throw new Error('Error al borrar manager');
+};
 
+export const deleteMatch = async (id: string) => {
+  const response = await fetch(`${API_URL}/matches/${id}/`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) throw new Error('Error al borrar partido');
+};
 // ==================== LOGIN ====================
 export const loginUser = (credentials: any) => fetchAPI('/login', 'POST', credentials);
 

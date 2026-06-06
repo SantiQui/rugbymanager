@@ -9,7 +9,9 @@ import { ShieldCheck, LogOut } from 'lucide-react';
 
 import { 
   getManagers, getProfessors, getPlayers, getMatches, getRoutines, getAttendances, getCampaigns,
-  saveManager, saveProfessor, savePlayer, saveMatch, saveRoutine, saveAttendance, saveCampaign 
+  saveManager, saveProfessor, savePlayer, saveMatch, saveRoutine, saveAttendance, saveCampaign,
+  // NUEVO: Importamos las funciones para borrar en la base de datos
+  deleteManager, deletePlayer, deleteMatch
 } from './services/api';
 
 export default function App() {
@@ -79,16 +81,37 @@ export default function App() {
   // Funciones de guardado SILENCIOSAS (sin alerts)
   const handleAddManager = async (newM: Manager) => { try { await saveManager(newM); loadDatabase(); } catch (e) { console.error(e); } };
   const handleUpdateManager = async (updatedM: Manager) => { try { await saveManager(updatedM); loadDatabase(); } catch (e) { console.error(e); } };
-  const handleDeleteManager = (id: string) => setManagers(prev => prev.filter(m => m.id !== id));
+  
+  // NUEVO: Funciones de borrado que hablan con la base de datos
+  const handleDeleteManager = async (id: string) => { 
+    try { 
+      await deleteManager(id); 
+      loadDatabase(); 
+    } catch (e) { console.error(e); } 
+  };
 
   const handleAddProfessor = async (newProf: Professor) => { try { await saveProfessor(newProf); loadDatabase(); } catch (e) { console.error(e); } };
   const handleAddPlayer = async (newP: Player) => { try { await savePlayer(newP); loadDatabase(); } catch (e) { console.error(e); } };
   const handleUpdatePlayer = async (updatedP: Player) => { try { await savePlayer(updatedP); loadDatabase(); } catch (e) { console.error(e); } };
-  const handleDeletePlayer = (id: string) => setPlayers(prev => prev.filter(p => p.id !== id));
+  
+  // NUEVO: Función de borrado de jugador asíncrona
+  const handleDeletePlayer = async (id: string) => { 
+    try { 
+      await deletePlayer(id); 
+      loadDatabase(); 
+    } catch (e) { console.error(e); } 
+  };
 
   const handleAddMatch = async (newMatch: Match) => { try { await saveMatch(newMatch); loadDatabase(); } catch (e) { console.error(e); } };
   const handleUpdateMatch = async (updatedMatch: Match) => { try { await saveMatch(updatedMatch); loadDatabase(); } catch (e) { console.error(e); } };
-  const handleDeleteMatch = (id: string) => setMatches(prev => prev.filter(m => m.id !== id));
+  
+  // NUEVO: Función de borrado de partido asíncrona
+  const handleDeleteMatch = async (id: string) => { 
+    try { 
+      await deleteMatch(id); 
+      loadDatabase(); 
+    } catch (e) { console.error(e); } 
+  };
 
   const handleUpdateMatchStats = async (matchId: string, titulares: string[], suplentes: string[], stats: { [playerId: string]: PlayerStats }, clubScore: number, rivalScore: number) => {
     const matchToUpdate = matches.find(m => m.id === matchId);
