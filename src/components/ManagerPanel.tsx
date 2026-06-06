@@ -33,6 +33,8 @@ export default function ManagerPanel({
   const [activeTab, setActiveTab] = useState<'players' | 'professors' | 'matches' | 'fichajes' | 'campanas'>('players');
 
   // Modals
+
+  const [searchTerm, setSearchTerm] = useState('');
   const [isAddingPlayer, setIsAddingPlayer] = useState(false);
   const [isAddingProf, setIsAddingProf] = useState(false);
   const [isAddingMatch, setIsAddingMatch] = useState(false);
@@ -87,9 +89,16 @@ export default function ManagerPanel({
   const [matchCatFilter, setMatchCatFilter] = useState<string>('all');
 
   const managerCategories = manager.categorias;
-  const filteredPlayers = players.filter(p => managerCategories.includes(p.categoria) && (playerCatFilter === 'all' || p.categoria === playerCatFilter));
+  const filteredPlayers = players.filter(p => {
+    const matchesCategory = managerCategories.includes(p.categoria) && (playerCatFilter === 'all' || p.categoria === playerCatFilter);
+    const matchesSearch = `${p.nombre} ${p.apellido} ${p.documento}`.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
   const filteredProfessors = professors.filter(p => p.categorias.some(cat => managerCategories.includes(cat)) && (profCatFilter === 'all' || p.categorias.includes(profCatFilter)));
   const filteredMatches = matches.filter(m => managerCategories.includes(m.categoria) && (matchCatFilter === 'all' || m.categoria === matchCatFilter));
+
+  // ... (tus funciones handle siguen igual)
 
   const handleSaveTercerTiempo = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,7 +136,6 @@ export default function ManagerPanel({
     
     setPlayerEditId(p.id); setIsAddingPlayer(true);
   };
-
   const handleSubmitPlayer = (e: React.FormEvent) => {
     e.preventDefault();
     const posicionesFinales = [playPos1, playPos2, playPos3].filter(pos => pos !== '').join(', ');
@@ -250,10 +258,20 @@ export default function ManagerPanel({
 
       {activeTab === 'players' && (
         <div className="space-y-4">
-          <button type="button" onClick={handleOpenAddPlayer} className="inline-flex items-center gap-1.5 rounded-lg bg-gray-900 hover:bg-black px-3.5 py-2 font-sans text-xs font-bold text-white transition-colors cursor-pointer shadow-xs"><UserPlus className="h-3.5 w-3.5" /> Registrar Jugador</button>
-          <div className="flex flex-wrap items-center justify-between gap-3 bg-white border border-gray-200 rounded-xl p-3">
-            <div className="flex items-center gap-2">
-              <span className="text-gray-500 text-[10px] font-bold uppercase tracking-wider">Filtrar por Categoría:</span>
+          <button 
+            type="button" 
+            onClick={handleOpenAddPlayer} 
+            className="inline-flex items-center gap-1.5 rounded-lg bg-gray-900 hover:bg-black px-3.5 py-2 font-sans text-xs font-bold text-white transition-colors cursor-pointer shadow-xs"
+          >
+            <UserPlus className="h-3.5 w-3.5" /> Registrar Jugador
+          </button>
+
+          {/* CONTENEDOR UNIFICADO DE FILTROS Y BUSCADOR */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white border border-gray-200 rounded-xl p-3">
+            
+            {/* Filtros de Categoría */}
+            <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto">
+              <span className="text-gray-500 text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">Categoría:</span>
               <div className="flex flex-wrap gap-1">
                 <button type="button" onClick={() => setPlayerCatFilter('all')} className={`rounded-lg px-2.5 py-1 text-xs font-bold uppercase ${playerCatFilter === 'all' ? 'bg-gray-900 text-white' : 'bg-gray-100 border text-gray-600 hover:bg-gray-200'}`}>Todas</button>
                 {managerCategories.map(cat => (
@@ -261,7 +279,20 @@ export default function ManagerPanel({
                 ))}
               </div>
             </div>
+
+            {/* BUSCADOR */}
+            <div className="w-full sm:w-64">
+              <input
+                type="text"
+                placeholder="🔍 Buscar jugador..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:ring-1 focus:ring-gray-900 outline-none"
+              />
+            </div>
           </div>
+
+          {/* Tabla de Jugadores */}
           <div className="rounded-xl border border-gray-200 bg-white overflow-hidden shadow-xs">
             <div className="overflow-x-auto text-left">
               <table className="w-full text-xs font-sans">
@@ -285,8 +316,6 @@ export default function ManagerPanel({
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-1.5">
                           <button type="button" onClick={() => handleOpenEditPlayer(p)} className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-200 rounded-md transition-colors cursor-pointer" title="Modificar"><Edit className="h-4 w-4" /></button>
-                          
-                          {/* NUEVO: Confirmación al borrar Jugador */}
                           <button type="button" onClick={() => { if(window.confirm(`¿Estás seguro de eliminar a ${p.nombre} ${p.apellido}?`)) onDeletePlayer(p.id); }} className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer" title="Borrar"><Trash2 className="h-4 w-4" /></button>
                         </div>
                       </td>
