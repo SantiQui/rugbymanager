@@ -963,8 +963,10 @@ const handleSaveAttendance = (e: React.FormEvent) => {
                     <div key={r.id} className="rounded-lg border border-slate-200 bg-white p-3.5 space-y-2 text-xs text-slate-705">
                       <div className="flex items-center justify-between">
                         <strong className="text-slate-900 block font-bold text-xs truncate max-w-[170px]">{r.titulo}</strong>
-                        <span className="text-[9px] text-slate-400 font-mono">{r.fechaInicio.slice(5)} al {r.fechaFin.slice(5)}</span>
-                      </div>
+                        <span className="text-[9px] text-slate-400 font-mono">
+                        {r.fechaInicio ? r.fechaInicio.slice(5) : 'Previa'} {r.fechaFin ? `al ${r.fechaFin.slice(5)}` : ''}
+                      </span>
+                    </div>
                       
                       <div className="flex flex-wrap gap-1 my-1">
                         {r.diasSemana?.map(dia => (
